@@ -1,10 +1,27 @@
 .App {
-  text-align: center;
+  flex-grow: 1;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
+}
+
+.main-container {
+  margin-top: 3rem;
+}
+
+.slider-control {
+  display: flex;
+  align-items: center;
+
+  & > p {
+    padding-left: 1rem;
+    margin: 0;
+    virtical-align: middle;
+    position: relative;
+    top: -3px;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
