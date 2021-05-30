@@ -4,13 +4,13 @@ let TDEEState = atom({
   key: 'TDEEState',
   default: {
     gender: 'Male',
-    weight: 0,
-    age: 0,
+    weight: 160,
+    age: 20,
     bfp: 0,
-    height: 12 * 4,
+    height: 12 * 5,
     exerciseVolume: 0,
-    activityScale: 1,
-    deficit: 0,
+    activityScale: 1.2,
+    deficit: -10,
     days: 30,
     weightGoal: 150
   }

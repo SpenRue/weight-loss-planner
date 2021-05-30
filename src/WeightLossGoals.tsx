@@ -30,7 +30,7 @@ function WeightLossGoals() {
             <Typography gutterBottom>Target Weight (lbs)</Typography>
             <div className="slider-control">
               <Slider
-                defaultValue={160}
+                defaultValue={150}
                 aria-labelledby="discrete-slider-custom"
                 step={1}
                 valueLabelDisplay="auto"
@@ -59,14 +59,14 @@ function WeightLossGoals() {
             <Typography gutterBottom>Target Calorie Deficit (Percentage)</Typography>
             <div className="slider-control">
               <Slider
-                defaultValue={0}
+                defaultValue={-1}
                 aria-labelledby="discrete-slider-custom"
                 step={1}
                 valueLabelDisplay="auto"
                 value={tdeeState.deficit}
                 onChange={(e, value) => setTDEEState({...tdeeState, deficit: value as number})}
                 min={-75}
-                max={50}
+                max={0}
               />
               <Typography>{tdeeState.deficit}%</Typography>
             </div>
