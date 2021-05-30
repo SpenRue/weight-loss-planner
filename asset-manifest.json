@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/weight-loss-planner/static/css/main.1977af65.chunk.css",
-    "main.js": "/weight-loss-planner/static/js/main.7bb91a96.chunk.js",
-    "main.js.map": "/weight-loss-planner/static/js/main.7bb91a96.chunk.js.map",
+    "main.js": "/weight-loss-planner/static/js/main.866bf2c3.chunk.js",
+    "main.js.map": "/weight-loss-planner/static/js/main.866bf2c3.chunk.js.map",
     "runtime-main.js": "/weight-loss-planner/static/js/runtime-main.45ee2841.js",
     "runtime-main.js.map": "/weight-loss-planner/static/js/runtime-main.45ee2841.js.map",
     "static/js/2.04ff03a3.chunk.js": "/weight-loss-planner/static/js/2.04ff03a3.chunk.js",
@@ -17,6 +17,6 @@
     "static/js/runtime-main.45ee2841.js",
     "static/js/2.04ff03a3.chunk.js",
     "static/css/main.1977af65.chunk.css",
-    "static/js/main.7bb91a96.chunk.js"
+    "static/js/main.866bf2c3.chunk.js"
   ]
 }
