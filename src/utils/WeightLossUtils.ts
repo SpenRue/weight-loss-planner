@@ -13,6 +13,9 @@ export function calculateTdee(tdee: any, deficit: number): { tdeeParams: any, bm
 }
 
 export function compoundTdee(tdee: any, deficit: number, days: number, step: number): any {
+  if(!tdee.weightGoal || !tdee.weight || tdee.weight <= tdee.weightGoal) {
+    return [tdee];
+  }
   step = step ?? 1;
   let resultData = [];
   let newTdee = {...tdee, tdeeParams: tdee};
@@ -27,9 +30,15 @@ export function compoundTdee(tdee: any, deficit: number, days: number, step: num
 }
 
 export function getGoalDate(tdee: any, deficit: number): any {
+  if(!tdee.weightGoal || !tdee.weight || tdee.weight <= tdee.weightGoal) {
+    return {days: 0, average: 0};
+  }
+  console.log('getting goal date', deficit, tdee);
   let newTdee = {...tdee, tdeeParams: tdee};
+  console.log('new tdee', newTdee);
   let calorieLoss = [];
   for (let i = 0; i < 365 * 2; i++) {
+    console.log('Calculating new TDEE');
     newTdee = calculateTdee(newTdee.tdeeParams, deficit);
     calorieLoss.push(newTdee.calorieLoss);
     if(newTdee.tdeeParams.weightGoal > newTdee.tdeeParams.weight)

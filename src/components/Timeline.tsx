@@ -4,11 +4,11 @@ import {
   Typography
 } from "@material-ui/core";
 import "./TDEEInput.scss"
-import TDEEState from './state/TDEEState'
+import TDEEState from '../state/TDEEState'
 import {useRecoilState} from "recoil";
 import { Line } from 'react-chartjs-2';
 import {LineProps} from "chart.js";
-import {calculateTdee, compoundTdee} from './utils/WeightLossUtils';
+import {calculateTdee, compoundTdee} from '../utils/WeightLossUtils';
 
 const options = {
   animation: false,

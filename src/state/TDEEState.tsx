@@ -11,6 +11,7 @@ let TDEEState = atom({
     exerciseVolume: 0,
     activityScale: 1.2,
     deficit: -10,
+    deficitMode: 'calories',
     days: 30,
     weightGoal: 150
   }
