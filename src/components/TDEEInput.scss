@@ -34,22 +34,22 @@
     & {
      padding-bottom: 0 !important;
     }
-    .height-controls {
-      flex-direction: column !important;
-      //margin: 1rem 0;
-      > * {
-        flex-grow: 1;
-
-        &:nth-child(1) {
-          padding-right: 0.0rem;
-          margin-bottom: 1rem;
-          //margin: 1rem 0;
-        }
-        &:nth-child(2) {
-          padding-left: 0.0rem
-        }
-      }
-    }
+    //.height-controls {
+    //  flex-direction: column !important;
+    //  //margin: 1rem 0;
+    //  > * {
+    //    flex-grow: 1;
+    //
+    //    &:nth-child(1) {
+    //      padding-right: 0.0rem;
+    //      margin-bottom: 1rem;
+    //      //margin: 1rem 0;
+    //    }
+    //    &:nth-child(2) {
+    //      padding-left: 0.0rem
+    //    }
+    //  }
+    //}
   }
 
   .exercise-volume-control {

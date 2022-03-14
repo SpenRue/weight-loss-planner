@@ -1,9 +1,11 @@
-export function calculateTdee(tdee: any, deficit: number): { tdeeParams: any, bmr: number, tdee: number, calorieIntake: number, calorieLoss: number, exercise: number } {
-  const bmr = (10 * tdee.weight * 0.453592) + (6.25 * tdee.height * 2.54) - (5 * tdee.age) + (tdee.gender === 'Male' ? 5 : 161);
-  const result = bmr * tdee.activityScale;
+import {GoalDateModel, TDEEModel, WeightLossPlanModel} from "../state/WeightLossPlanState";
+
+export function calculateTdee(weightLossPlanState: WeightLossPlanModel, deficit: number): TDEEModel {
+  const bmr = (10 * weightLossPlanState.weight * 0.453592) + (6.25 * weightLossPlanState.height * 2.54) - (5 * weightLossPlanState.age) + (weightLossPlanState.gender === 'Male' ? 5 : 161);
+  const result = bmr * weightLossPlanState.activityScale;
   const calorieLoss = (result * deficit);
   return {
-    tdeeParams: {...tdee, weight: tdee.weight + (calorieLoss / 3500) },
+    updatedWeight: weightLossPlanState.weight + (calorieLoss / 3500),
     bmr,
     tdee: result,
     calorieIntake: result + calorieLoss,
@@ -29,19 +31,17 @@ export function compoundTdee(tdee: any, deficit: number, days: number, step: num
   return resultData;
 }
 
-export function getGoalDate(tdee: any, deficit: number): any {
-  if(!tdee.weightGoal || !tdee.weight || tdee.weight <= tdee.weightGoal) {
+export function getGoalDate(weightLossPlanState: WeightLossPlanModel, deficit: number): GoalDateModel {
+  if(!weightLossPlanState.weightGoal || !weightLossPlanState.weight || weightLossPlanState.weight <= weightLossPlanState.weightGoal) {
     return {days: 0, average: 0};
   }
-  console.log('getting goal date', deficit, tdee);
-  let newTdee = {...tdee, tdeeParams: tdee};
-  console.log('new tdee', newTdee);
+  let newWeightLossPlanState = {...weightLossPlanState};
   let calorieLoss = [];
   for (let i = 0; i < 365 * 2; i++) {
-    console.log('Calculating new TDEE');
-    newTdee = calculateTdee(newTdee.tdeeParams, deficit);
-    calorieLoss.push(newTdee.calorieLoss);
-    if(newTdee.tdeeParams.weightGoal > newTdee.tdeeParams.weight)
+    let tdeeResult: TDEEModel = calculateTdee(newWeightLossPlanState, deficit);
+    newWeightLossPlanState = {...newWeightLossPlanState, weight: tdeeResult.updatedWeight}
+    calorieLoss.push(tdeeResult.calorieLoss);
+    if(weightLossPlanState.weightGoal > tdeeResult.updatedWeight)
       return {days: i, average: calorieLoss.reduce((a: number, b: number) => a + b, 0) / i};
   }
 

@@ -19,10 +19,11 @@ import LocationOnIcon from '@material-ui/icons/LocationOn';
 import WeightLossGoals from "./components/WeightLossGoals";
 import Timeline from "./components/Timeline";
 import { useTheme } from '@mui/material';
+// import {SetUrlHook} from "./state/WeightLossPlanState";
 
 
 function App() {
-  const theme = useTheme();
+  // SetUrlHook();
   return (
     <div className="App" style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
       <AppBar position={"static"}>

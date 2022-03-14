@@ -5,12 +5,13 @@ import {
 } from "@material-ui/core";
 import "./TDEEInput.scss"
 
-import {useRecoilState} from "recoil";
-import TDEEState from "../state/TDEEState";
+import {useRecoilState, useRecoilValue} from "recoil";
+import WeightLossPlanState from "../state/WeightLossPlanState";
 import {calculateTdee, getGoalDate} from "../utils/WeightLossUtils";
 import moment from "moment";
-import {Card, ToggleButton, ToggleButtonGroup} from "@mui/material";
+import {Card, Paper, ToggleButton, ToggleButtonGroup} from "@mui/material";
 import React from "react";
+import _ from "lodash";
 
 function addDays(date: Date, days: number) {
   var result = new Date(date);
@@ -19,37 +20,37 @@ function addDays(date: Date, days: number) {
 }
 
 function WeightLossGoals() {
-  const [tdeeState, setTDEEState] = useRecoilState(TDEEState.state);
-
-  function goal() {
-    let result = getGoalDate(tdeeState, tdeeState.deficit / 100)
-    console.log('result: ', result);
-    return result;
-  }
+  const [weightLossPlanState, setWeightLossPlanState] = useRecoilState(WeightLossPlanState.state);
+  const tdeeState = useRecoilValue(WeightLossPlanState.selectors.TDEEState);
+  const goalDateState = useRecoilValue(WeightLossPlanState.selectors.GoalDateState);
 
   function getBodyWeightPercentageDelta() {
-    let goalResult = (goal().average as number) * 7 / 3500;
-    let result = 1 * goalResult / tdeeState.weight;
+    let goalResult = (goalDateState.average as number) * 7 / 3500;
+    let result = 1 * goalResult / weightLossPlanState.weight;
     return (result * 100).toFixed(2)
   }
 
   function getDeficitBasedOnMode() {
-    switch(tdeeState.deficitMode) {
+    switch (weightLossPlanState.deficitMode) {
       case 'calories':
-        return (goal().average).toFixed(0);
+        return (goalDateState.average).toFixed(0);
+      case 'caloriesConsumed':
+        return Math.floor(tdeeState.calorieIntake);
       case 'caloriePercentage':
-        return tdeeState.deficit;
+        return weightLossPlanState.deficit;
       case 'bodyWeightPercentage':
         return getBodyWeightPercentageDelta();
       default:
-        return tdeeState.deficit;
+        return weightLossPlanState.deficit;
     }
   }
 
   function getUnitBasedOnMode() {
-    switch(tdeeState.deficitMode) {
+    switch (weightLossPlanState.deficitMode) {
       case 'calories':
-        return ' calories per day';
+        return ' calories burned per day';
+      case 'caloriesConsumed':
+        return ' calories consumed per day';
       case 'caloriePercentage':
         return ' % of TDEE per day';
       case 'bodyWeightPercentage':
@@ -59,72 +60,116 @@ function WeightLossGoals() {
 
   }
 
-  let weightGoalText: string = tdeeState.weightGoal.toString();
+  function getWeightGoalFromBFPGoal() {
+    let initialLossTarget = weightLossPlanState.weight - weightLossPlanState.weightGoal;
+    let initialLeanMass = weightLossPlanState.weight - weightLossPlanState.weight * (weightLossPlanState.bfp / 100);
+    let totalLeanMassLoss = initialLossTarget * 0.25;
+    let realLeanMass = initialLeanMass - totalLeanMassLoss;
+    let targetWeight = realLeanMass / (1 - (weightLossPlanState.bfpGoal / 100));
+    return targetWeight.toFixed(0);
+  }
+
+  let handleStateChange = _.throttle((newState) => {
+    setWeightLossPlanState(newState);
+  }, 300, {trailing: false});
 
   return (
     <Container className={"card-container"}>
       <h2>Set your weight loss goals</h2>
       <form>
-        <TextField
-          label="Target Weight"
-          type="number"
-          inputProps={{inputMode:"numeric", min: 0}}
-          variant='filled'
-          style={{width: '100%'}}
-          value={weightGoalText}
-          onChange={(event) => {
-            // weightGoalText = event.target.value;
-            // if(!event.target.value) return;
-            console.log('Setting weightGoal to: ', event.target.value);
-            setTDEEState({
-              ...tdeeState,
-              weightGoal: Number.parseInt(event.target.value)
-            })
-          }}
-
-        />
-        {/*<div className={'height-controls'}>*/}
-        {/*  /!*<div className="weight-control" style={{flexGrow: 1, flexBasis: 0 }}>*!/*/}
-        {/*  /!*  <Typography gutterBottom>Target Weight (lbs)</Typography>*!/*/}
-        {/*  /!*  <div className="slider-control">*!/*/}
-        {/*  /!*    <Slider*!/*/}
-        {/*  /!*      defaultValue={150}*!/*/}
-        {/*  /!*      aria-labelledby="discrete-slider-custom"*!/*/}
-        {/*  /!*      step={1}*!/*/}
-        {/*  /!*      valueLabelDisplay="auto"*!/*/}
-        {/*  /!*      min={50}*!/*/}
-        {/*  /!*      max={300}*!/*/}
-        {/*  /!*      value={tdeeState.weightGoal}*!/*/}
-        {/*  /!*      onChange={(e, value) => setTDEEState({...tdeeState, weightGoal: value as number})}*!/*/}
-        {/*  /!*    />*!/*/}
-        {/*  /!*    <Typography>{tdeeState.weightGoal}</Typography>*!/*/}
-        {/*  /!*  </div>*!/*/}
-        {/*  /!*</div>*!/*/}
-        {/*  /!*<div className="weight-control" style={{flexGrow: 1, flexBasis: 0 }}>*!/*/}
-        {/*  /!*  <Typography gutterBottom>Target Body Fat Percentage</Typography>*!/*/}
-        {/*  /!*  <Slider*!/*/}
-        {/*  /!*    defaultValue={25}*!/*/}
-        {/*  /!*    aria-labelledby="discrete-slider-custom"*!/*/}
-        {/*  /!*    step={1}*!/*/}
-        {/*  /!*    valueLabelDisplay="auto"*!/*/}
-        {/*  /!*    min={1}*!/*/}
-        {/*  /!*    max={50}*!/*/}
-        {/*  /!*  />*!/*/}
-        {/*  /!*</div>*!/*/}
-        {/*</div>*/}
-        {/*<div className={'height-controls'}>*/}
-        <Typography gutterBottom>How do you want to measure your daily change?</Typography>
+        <Typography>Do you want to target a body fat percentage or a weight?</Typography>
         <ToggleButtonGroup style={{width: '100%'}}
-                           aria-label="outlined primary button group" value={tdeeState.deficitMode}
+                           aria-label="outlined primary button group" value={weightLossPlanState.targetMode}
                            exclusive
                            onChange={(
                              event: React.MouseEvent<HTMLElement>,
                              newAlignment: string | null,
                            ) => {
-                             setTDEEState({...tdeeState, deficitMode: newAlignment || ''})
+                             setWeightLossPlanState({...weightLossPlanState, targetMode: newAlignment || ''})
                            }}
         >
-          <ToggleButton value="calories">Calories<br/>(Per Day)</ToggleButton>
+          <ToggleButton value="weight">Weight</ToggleButton>
+          <ToggleButton value="bfp">Body Fat %</ToggleButton>
+        </ToggleButtonGroup>
+        {weightLossPlanState.targetMode == 'bfp' &&
+        <div>
+            <Paper elevation={0} sx={{padding: '0.75rem',marginBottom: '1rem', color: '#bf360c', bgcolor: '#fbe9e7'}}>
+                <Typography>The target weight is being calculated assuming you will lose 75% fat and 25% lean mass.</Typography>
+            </Paper>
+            <div style={{display: 'flex', gap: '1rem'}}>
+                <TextField
+                    label="Current Body Fat Percentage"
+                    type="number"
+                    inputProps={{inputMode: "numeric", min: 5}}
+                    variant='filled'
+                    style={{flexGrow: 1}}
+                    value={weightLossPlanState.bfp}
+                    onChange={(event) => {
+                      // weightGoalText = event.target.value;
+                      // if(!event.target.value) return;
+                      console.log('Setting weightGoal to: ', event.target.value);
+                      setWeightLossPlanState({
+                        ...weightLossPlanState,
+                        bfp: Number.parseInt(event.target.value),
+                        weightGoal: Number.parseInt(getWeightGoalFromBFPGoal())
+                      })
+                    }}
+
+                />
+                <TextField
+                    label="Target Body Fat Percentage"
+                    type="number"
+                    inputProps={{inputMode: "numeric", min: 5}}
+                    variant='filled'
+                    style={{flexGrow: 1}}
+                    value={weightLossPlanState.bfpGoal}
+                    onChange={(event) => {
+                      // weightGoalText = event.target.value;
+                      // if(!event.target.value) return;
+                      console.log('Setting weightGoal to: ', event.target.value);
+                      setWeightLossPlanState({
+                        ...weightLossPlanState,
+                        bfpGoal: Number.parseInt(event.target.value),
+                        weightGoal: Number.parseInt(getWeightGoalFromBFPGoal())
+                      })
+                    }}
+
+                />
+            </div>
+        </div>
+        }
+        <TextField
+          label="Target Weight"
+          type="number"
+          inputProps={{inputMode: "numeric", min: 0}}
+          variant='filled'
+          disabled={weightLossPlanState.targetMode == 'bfp'}
+          style={{flexGrow: 1, width: '100%'}}
+          value={weightLossPlanState.weightGoal}
+          onChange={(event) => {
+            // weightGoalText = event.target.value;
+            // if(!event.target.value) return;
+            console.log('Setting weightGoal to: ', event.target.value);
+            setWeightLossPlanState({
+              ...weightLossPlanState,
+              weightGoal:  Number.parseInt(event.target.value)
+            })
+          }}
+
+        />
+        <Typography gutterBottom>How do you want to measure your daily change?</Typography>
+        <ToggleButtonGroup style={{width: '100%'}}
+                           aria-label="outlined primary button group" value={weightLossPlanState.deficitMode}
+                           exclusive
+                           onChange={(
+                             event: React.MouseEvent<HTMLElement>,
+                             newAlignment: string | null,
+                           ) => {
+                             setWeightLossPlanState({...weightLossPlanState, deficitMode: newAlignment || ''})
+                           }}
+        >
+          <ToggleButton value="calories">Calories Burned<br/>(Per Day)</ToggleButton>
+          <ToggleButton value="caloriesConsumed">Calories Consumed<br/>(Per Day)</ToggleButton>
           <ToggleButton value="caloriePercentage">TDEE %<br/>(Per Day)</ToggleButton>
           <ToggleButton value="bodyWeightPercentage">Body Weight %<br/>(Per Week)</ToggleButton>
         </ToggleButtonGroup>
@@ -135,8 +180,8 @@ function WeightLossGoals() {
             aria-labelledby="discrete-slider-custom"
             step={0.01}
             valueLabelDisplay="auto"
-            value={tdeeState.deficit}
-            onChange={(e, value) => setTDEEState({...tdeeState, deficit: value as number})}
+            // value={weightLossPlanState.deficit}
+            onChange={(e, value) => handleStateChange({...weightLossPlanState, deficit: value as number})}
             min={-75}
             max={0}
             marks={[
@@ -161,44 +206,16 @@ function WeightLossGoals() {
             valueLabelFormat={(_) => getDeficitBasedOnMode()}
           />
         </div>
-        {/*  <div className="weight-control" style={{flexGrow: 1, flexBasis: 0 }}>*/}
-        {/*    <Typography gutterBottom>End Deficit</Typography>*/}
-        {/*    <Slider*/}
-        {/*      defaultValue={0}*/}
-        {/*      aria-labelledby="discrete-slider-custom"*/}
-        {/*      step={1}*/}
-        {/*      valueLabelDisplay="auto"*/}
-        {/*      min={-50}*/}
-        {/*      max={50}*/}
-        {/*    />*/}
-        {/*  </div>*/}
-        {/*</div>*/}
-        {/*<div className="weight-control" style={{flexGrow: 1, flexBasis: 0 }}>*/}
-        {/*  <Typography gutterBottom>Amount of Days on Graph</Typography>*/}
-        {/*  <div className="slider-control">*/}
-        {/*    <Slider*/}
-        {/*      defaultValue={30}*/}
-        {/*      aria-labelledby="discrete-slider-custom"*/}
-        {/*      step={1}*/}
-        {/*      valueLabelDisplay="auto"*/}
-        {/*      min={1}*/}
-        {/*      max={365 * 2}*/}
-        {/*      value={tdeeState.days}*/}
-        {/*      onChange={(e, value) => setTDEEState({...tdeeState, days: value as number})}*/}
-        {/*    />*/}
-        {/*    <Typography>{tdeeState.days}</Typography>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
         <Card variant="outlined" style={{padding: '1rem'}}>
           <div className="weight-control" style={{flexGrow: 1, flexBasis: 0}}>
             <Typography gutterBottom>Your initial target calorie intake should
-              be <strong>{Math.floor(calculateTdee(tdeeState, tdeeState.deficit / 100).calorieIntake)} cal</strong>.</Typography>
+              be <strong>{Math.floor(tdeeState.calorieIntake)} cal</strong>.</Typography>
           </div>
           <div className="weight-control" style={{flexGrow: 1, flexBasis: 0}}>
             <Typography gutterBottom>You will
-              reach <strong>{tdeeState.weightGoal} lbs </strong> in <strong>{goal().days} days</strong> on <strong>{moment(addDays(new Date(), goal().days)).format('MMM Do YY')}</strong> with
-              an average weight loss of <strong>{((goal().average as number) * 7 / 3500).toFixed(2)} lbs</strong> per
-              week and <strong>{(goal().average * -1).toFixed(0)} cal</strong> burned per day.</Typography>
+              reach <strong>{weightLossPlanState.weightGoal} lbs </strong> in <strong>{goalDateState.days} days</strong> on <strong>{moment(addDays(new Date(), goalDateState.days)).format('MMM Do YY')}</strong> with
+              an average weight loss of <strong>{((goalDateState.average as number) * 7 / 3500).toFixed(2)} lbs</strong> per
+              week and <strong>{(goalDateState.average * -1).toFixed(0)} cal</strong> burned per day.</Typography>
           </div>
         </Card>
       </form>
