@@ -180,7 +180,7 @@ function WeightLossGoals() {
             aria-labelledby="discrete-slider-custom"
             step={0.01}
             valueLabelDisplay="auto"
-            // value={weightLossPlanState.deficit}
+            value={weightLossPlanState.deficit}
             onChange={(e, value) => handleStateChange({...weightLossPlanState, deficit: value as number})}
             min={-75}
             max={0}
