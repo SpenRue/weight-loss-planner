@@ -47,3 +47,13 @@ export function getGoalDate(weightLossPlanState: WeightLossPlanModel, deficit: n
 
   return {days: -1, average: -1};
 }
+
+
+export function getWeightGoalFromBFPGoal(weightLossPlanState: WeightLossPlanModel) {
+  let initialLossTarget = weightLossPlanState.weight - weightLossPlanState.weightGoal;
+  let initialLeanMass = weightLossPlanState.weight - weightLossPlanState.weight * (weightLossPlanState.bfp / 100);
+  let totalLeanMassLoss = initialLossTarget * 0.25;
+  let realLeanMass = initialLeanMass - totalLeanMassLoss;
+  let targetWeight = realLeanMass / (1 - (weightLossPlanState.bfpGoal / 100));
+  return Number.parseInt(targetWeight.toFixed(0));
+}

@@ -23,6 +23,7 @@ function WeightLossGoals() {
   const [weightLossPlanState, setWeightLossPlanState] = useRecoilState(WeightLossPlanState.state);
   const tdeeState = useRecoilValue(WeightLossPlanState.selectors.TDEEState);
   const goalDateState = useRecoilValue(WeightLossPlanState.selectors.GoalDateState);
+  const weightGoalState = useRecoilValue(WeightLossPlanState.selectors.WeightGoalState);
 
   function getBodyWeightPercentageDelta() {
     let goalResult = (goalDateState.average as number) * 7 / 3500;
@@ -60,15 +61,6 @@ function WeightLossGoals() {
 
   }
 
-  function getWeightGoalFromBFPGoal() {
-    let initialLossTarget = weightLossPlanState.weight - weightLossPlanState.weightGoal;
-    let initialLeanMass = weightLossPlanState.weight - weightLossPlanState.weight * (weightLossPlanState.bfp / 100);
-    let totalLeanMassLoss = initialLossTarget * 0.25;
-    let realLeanMass = initialLeanMass - totalLeanMassLoss;
-    let targetWeight = realLeanMass / (1 - (weightLossPlanState.bfpGoal / 100));
-    return targetWeight.toFixed(0);
-  }
-
   let handleStateChange = _.throttle((newState) => {
     setWeightLossPlanState(newState);
   }, 300, {trailing: false});
@@ -100,18 +92,18 @@ function WeightLossGoals() {
                 <TextField
                     label="Current Body Fat Percentage"
                     type="number"
-                    inputProps={{inputMode: "numeric", min: 5}}
+                    InputProps={{inputProps: { min: 5 }}}
                     variant='filled'
                     style={{flexGrow: 1}}
-                    value={weightLossPlanState.bfp}
+                    value={weightLossPlanState.bfp || ''}
                     onChange={(event) => {
                       // weightGoalText = event.target.value;
-                      // if(!event.target.value) return;
-                      console.log('Setting weightGoal to: ', event.target.value);
+                      if(!event.target.value)
+                        event.target.value = '';
+                      console.log('Setting cBFP to: ', event.target.value);
                       setWeightLossPlanState({
                         ...weightLossPlanState,
                         bfp: Number.parseInt(event.target.value),
-                        weightGoal: Number.parseInt(getWeightGoalFromBFPGoal())
                       })
                     }}
 
@@ -119,18 +111,16 @@ function WeightLossGoals() {
                 <TextField
                     label="Target Body Fat Percentage"
                     type="number"
-                    inputProps={{inputMode: "numeric", min: 5}}
+                    InputProps={{inputProps: { min: 5 }}}
                     variant='filled'
                     style={{flexGrow: 1}}
-                    value={weightLossPlanState.bfpGoal}
+                    value={weightLossPlanState.bfpGoal || ''}
                     onChange={(event) => {
                       // weightGoalText = event.target.value;
-                      // if(!event.target.value) return;
-                      console.log('Setting weightGoal to: ', event.target.value);
+                      console.log('Setting tBFP to: ', event.target.value);
                       setWeightLossPlanState({
                         ...weightLossPlanState,
                         bfpGoal: Number.parseInt(event.target.value),
-                        weightGoal: Number.parseInt(getWeightGoalFromBFPGoal())
                       })
                     }}
 
@@ -141,15 +131,14 @@ function WeightLossGoals() {
         <TextField
           label="Target Weight"
           type="number"
-          inputProps={{inputMode: "numeric", min: 0}}
+          InputProps={{inputProps: { min: 0 }}}
           variant='filled'
           disabled={weightLossPlanState.targetMode == 'bfp'}
           style={{flexGrow: 1, width: '100%'}}
-          value={weightLossPlanState.weightGoal}
+          value={weightGoalState || ''}
           onChange={(event) => {
             // weightGoalText = event.target.value;
-            // if(!event.target.value) return;
-            console.log('Setting weightGoal to: ', event.target.value);
+            console.log('Setting THE weightGoal to: ', event.target.value);
             setWeightLossPlanState({
               ...weightLossPlanState,
               weightGoal:  Number.parseInt(event.target.value)

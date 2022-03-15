@@ -1,5 +1,5 @@
 import {atom, selector, useRecoilState} from "recoil";
-import {calculateTdee, getGoalDate} from "../utils/WeightLossUtils";
+import {calculateTdee, getGoalDate, getWeightGoalFromBFPGoal} from "../utils/WeightLossUtils";
 import { useSearchParams } from 'react-router-dom';
 import {useEffect, useRef} from "react";
 import qs from 'qs';
@@ -96,10 +96,22 @@ const GoalDateState = selector({
   }
 })
 
+const WeightGoalState = selector({
+  key: 'weightGoalState',
+  get: ({get}) => {
+    const weightLossPlanState = get(WeightLossPlanState);
+    if(weightLossPlanState.targetMode == 'bfp')
+      return getWeightGoalFromBFPGoal(weightLossPlanState);
+    else
+      return weightLossPlanState.weightGoal;
+  }
+})
+
 export default {
   state: WeightLossPlanState,
   selectors: {
     TDEEState,
     GoalDateState,
+    WeightGoalState
   }
 };
