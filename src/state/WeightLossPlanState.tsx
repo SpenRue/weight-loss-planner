@@ -83,7 +83,7 @@ const WeightLossPlanState = atom({
 const TDEEState = selector({
   key: 'tdeeState',
   get: ({get}) => {
-    const weightLossPlanState = get(WeightLossPlanState);
+    const weightLossPlanState: WeightLossPlanModel = {...get(WeightLossPlanState), weightGoal: get(WeightGoalState)};
     return calculateTdee(weightLossPlanState, weightLossPlanState.deficit/100);
   }
 })
@@ -91,7 +91,7 @@ const TDEEState = selector({
 const GoalDateState = selector({
   key: 'goalDateState',
   get: ({get}) => {
-    const weightLossPlanState = get(WeightLossPlanState);
+    const weightLossPlanState: WeightLossPlanModel = {...get(WeightLossPlanState), weightGoal: get(WeightGoalState)};
     return getGoalDate(weightLossPlanState, weightLossPlanState.deficit/100);
   }
 })

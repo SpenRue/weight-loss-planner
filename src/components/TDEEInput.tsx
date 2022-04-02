@@ -58,11 +58,14 @@ function TDEEInput() {
           <TextField
             label="Weight"
             type="number"
-            inputProps={{inputMode:"numeric", min: 0}}
+            InputProps = {{ inputProps: { min: 0 }}}
             variant='filled'
             style={{flexGrow: 1}}
             value={weightLossPlanState.weight}
-            onChange={(event) => setWeightLossPlanState({...weightLossPlanState, weight: Number.parseInt(event.target.value)})}
+            onChange={(event) => {
+              console.debug('Setting starting weight to'+ event.target.value);
+              setWeightLossPlanState({...weightLossPlanState, weight: Number.parseInt(event.target.value)})
+            }}
           />
           <TextField
             label="Age"

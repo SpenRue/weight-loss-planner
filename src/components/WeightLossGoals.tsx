@@ -97,10 +97,9 @@ function WeightLossGoals() {
                     style={{flexGrow: 1}}
                     value={weightLossPlanState.bfp || ''}
                     onChange={(event) => {
-                      // weightGoalText = event.target.value;
                       if(!event.target.value)
                         event.target.value = '';
-                      console.log('Setting cBFP to: ', event.target.value);
+                      console.debug('Setting cBFP to: ', event.target.value);
                       setWeightLossPlanState({
                         ...weightLossPlanState,
                         bfp: Number.parseInt(event.target.value),
@@ -117,7 +116,7 @@ function WeightLossGoals() {
                     value={weightLossPlanState.bfpGoal || ''}
                     onChange={(event) => {
                       // weightGoalText = event.target.value;
-                      console.log('Setting tBFP to: ', event.target.value);
+                      console.debug('Setting tBFP to: ', event.target.value);
                       setWeightLossPlanState({
                         ...weightLossPlanState,
                         bfpGoal: Number.parseInt(event.target.value),
@@ -138,7 +137,7 @@ function WeightLossGoals() {
           value={weightGoalState || ''}
           onChange={(event) => {
             // weightGoalText = event.target.value;
-            console.log('Setting THE weightGoal to: ', event.target.value);
+            console.debug('Setting THE weightGoal to: ', event.target.value);
             setWeightLossPlanState({
               ...weightLossPlanState,
               weightGoal:  Number.parseInt(event.target.value)
@@ -202,7 +201,7 @@ function WeightLossGoals() {
           </div>
           <div className="weight-control" style={{flexGrow: 1, flexBasis: 0}}>
             <Typography gutterBottom>You will
-              reach <strong>{weightLossPlanState.weightGoal} lbs </strong> in <strong>{goalDateState.days} days</strong> on <strong>{moment(addDays(new Date(), goalDateState.days)).format('MMM Do YY')}</strong> with
+              reach <strong>{weightGoalState} lbs </strong> in <strong>{goalDateState.days} days</strong> on <strong>{moment(addDays(new Date(), goalDateState.days)).format('MMM Do YY')}</strong> with
               an average weight loss of <strong>{((goalDateState.average as number) * 7 / 3500).toFixed(2)} lbs</strong> per
               week and <strong>{(goalDateState.average * -1).toFixed(0)} cal</strong> burned per day.</Typography>
           </div>
